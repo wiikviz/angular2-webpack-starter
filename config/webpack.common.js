@@ -4,6 +4,7 @@
 
 const webpack = require('webpack');
 const helpers = require('./helpers');
+const ProvidePlugin = require('webpack/lib/ProvidePlugin');
 
 /*
  * Webpack Plugins
@@ -14,7 +15,6 @@ const NormalModuleReplacementPlugin = require('webpack/lib/NormalModuleReplaceme
 const ContextReplacementPlugin = require('webpack/lib/ContextReplacementPlugin');
 const CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const ForkCheckerPlugin = require('awesome-typescript-loader').ForkCheckerPlugin;
 const HtmlElementsPlugin = require('./html-elements-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const LoaderOptionsPlugin = require('webpack/lib/LoaderOptionsPlugin');
@@ -118,6 +118,14 @@ module.exports = function (options) {
           use: 'json-loader'
         },
 
+        {
+          test: /\.scss$/,
+          //exclude: /node_modules/,
+          loaders: ['raw-loader', 'postcss-loader','sass-loader'] // sass-loader not scss-loader
+        },
+
+        { test: /\.(woff2?|ttf|eot|svg)$/, loader: 'url?limit=10000' },
+
         /*
          * to string and css loader support for *.css files
          * Returns file content as string
@@ -156,6 +164,30 @@ module.exports = function (options) {
      * See: http://webpack.github.io/docs/configuration.html#plugins
      */
     plugins: [
+      new ProvidePlugin({
+        jQuery: 'jquery',
+        jquery: 'jquery',
+        $: 'jquery',
+        "Tether": 'tether',
+        "window.Tether": "tether",
+        //---------------------------------------------------
+        //------------- temporary workaround ----------------
+        // https://github.com/shakacode/bootstrap-loader/issues/172#issuecomment-247205500
+        //this requires exports-loader installed from npm
+        Tooltip: "exports-loader?Tooltip!bootstrap/js/dist/tooltip",
+        Alert: "exports-loader?Alert!bootstrap/js/dist/alert",
+        Button: "exports-loader?Button!bootstrap/js/dist/button",
+        Carousel: "exports-loader?Carousel!bootstrap/js/dist/carousel",
+        Collapse: "exports-loader?Collapse!bootstrap/js/dist/collapse",
+        Dropdown: "exports-loader?Dropdown!bootstrap/js/dist/dropdown",
+        Modal: "exports-loader?Modal!bootstrap/js/dist/modal",
+        Popover: "exports-loader?Popover!bootstrap/js/dist/popover",
+        Scrollspy: "exports-loader?Scrollspy!bootstrap/js/dist/scrollspy",
+        Tab: "exports-loader?Tab!bootstrap/js/dist/tab",
+        Util: "exports-loader?Util!bootstrap/js/dist/util"
+        //---------------------------------------------------
+      }),
+
       new AssetsPlugin({
         path: helpers.root('dist'),
         filename: 'webpack-assets.json',

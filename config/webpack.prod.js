@@ -5,7 +5,7 @@
 const helpers = require('./helpers');
 const webpackMerge = require('webpack-merge'); // used to merge webpack configs
 const commonConfig = require('./webpack.common.js'); // the settings that are common to prod and dev
-
+const autoprefixer = require('autoprefixer');
 /**
  * Webpack Plugins
  */
@@ -243,7 +243,15 @@ module.exports = function (env) {
         minimize: true,
         debug: false,
         options: {
-
+          context: helpers.root('src'),
+          output: {path: helpers.root('dist')},
+          /**
+           * See: https://github.com/postcss/postcss-loader/issues/125
+           */
+          postcss: {
+            sourceMap: true,
+            plugins: () => [autoprefixer],
+          },
           /**
            * Html loader advanced options
            *
